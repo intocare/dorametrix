@@ -5,7 +5,7 @@ provider:
   runtime: nodejs18.x
   architecture: arm64
   stage: ${opt:stage, 'dev'}
-  region:  ${opt:region, 'eu-north-1'}
+  region:  ${opt:region, 'eu-west-1'}
   memorySize: ${opt:memory, 512}
   timeout: ${opt:timeout, 10}
   logRetentionInDays: ${opt:logRetentionInDays, 7}
@@ -50,7 +50,7 @@ package:
 custom:
   config:
     apiKey: ${opt:apiKey, '82490d5a-1950-4527-ab2f-5c984c861462'} # Add your desired valid API key here or use the default
-    awsAccountNumber: ${opt:awsAccountNumber, '123412341234'} # Set this to your value if you want to use a fallback value
+    awsAccountNumber: ${opt:awsAccountNumber, '377694754711'} # Set this to your value if you want to use a fallback value
     maxDateRange: ${opt:maxDateRange, '30'}
     maxLifeInDays: ${opt:maxLifeInDays, '90'}
     tableName: ${self:service}-${self:provider.stage}

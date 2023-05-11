@@ -32,6 +32,7 @@ export async function handler(
     const queryStringParameters = createQueryStringParamsObjectFromString(event);
     const queryParams = getRequestDTO(queryStringParameters);
     const repo = createNewDynamoDbRepository();
+    console.log(queryParams);
     const metrics = await getMetrics(repo, queryParams);
 
     return end(200, metrics);

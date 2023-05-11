@@ -80,7 +80,7 @@ class DynamoRepository implements Repository {
       },
       Limit: 1
     };
-
+    console.log('getting cached metrics');
     // @ts-ignore
     const cachedData: DynamoItems | null =
       process.env.NODE_ENV !== 'test'
@@ -108,7 +108,7 @@ class DynamoRepository implements Repository {
         data: { S: JSON.stringify(metrics) }
       }
     };
-
+    console.log("caching metrics");
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }
@@ -139,7 +139,7 @@ class DynamoRepository implements Repository {
         id: { S: randomUUID() }
       }
     };
-
+    console.log("adding event");
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }
@@ -160,7 +160,7 @@ class DynamoRepository implements Repository {
         id: { S: id }
       }
     };
-
+    console.log("adding change");
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }
@@ -182,12 +182,13 @@ class DynamoRepository implements Repository {
         id: { S: id }
       }
     };
-
+    console.log("adding deployment");
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
 
     // Update the special "last deployed" item in the database
     command['Item']['sk']['S'] = 'LastDeployedCommit';
+    console.log('updating last deployed commit');
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }
@@ -210,7 +211,7 @@ class DynamoRepository implements Repository {
         id: { S: id }
       }
     };
-
+    console.log("adding incident");
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }
@@ -223,19 +224,33 @@ class DynamoRepository implements Repository {
    * @description Get data from DynamoDB.
    */
   private async getItem(dataRequest: DataRequest): Promise<any> {
-    const { key, from, getLastDeployedCommit } = dataRequest;
-
-    const command = {
-      TableName: this.tableName,
-      KeyConditionExpression: 'pk = :pk AND sk = :sk',
-      ExpressionAttributeValues: {
-        ':pk': { S: key },
-        ':sk': {
-          S: getLastDeployedCommit ? 'LastDeployedCommit' : from
+    const { key, from, getLastDeployedCommit, to } = dataRequest;
+    let command;
+    if(getLastDeployedCommit){
+      console.log('deployed commit');
+      command = {
+        TableName: this.tableName,
+        KeyConditionExpression: 'pk = :pk AND sk = :sk',
+        ExpressionAttributeValues: {
+          ':pk': { S: key },
+          ':sk': {
+            S: 'LastDeployedCommit'
+          }
+        }
+      };
+    }else{
+      console.log('between');
+      command = {
+        TableName: 'dorametrix-dev',
+        KeyConditionExpression: 'pk = :pk AND sk BETWEEN :start_sk AND :end_sk',
+        ExpressionAttributeValues: {
+          ':pk': { S: key },
+          ':start_sk': { S: from },
+          ':end_sk': { S: to }
         }
       }
-    };
-
+    }
+    console.log(new QueryCommand(command).input);
     return process.env.NODE_ENV !== 'test'
       ? await this.dynamoDb.send(new QueryCommand(command))
       : getTestData(key);
