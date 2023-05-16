@@ -85,47 +85,6 @@ export class GitHubParser implements Parser {
   }
 
   /**
-   * @description Utility to create an incident.
-   */
-  /*private handleOpenedLabeled(body: Record<string, any>) {
-    const timeCreated = body?.['issue']?.['created_at'];
-    if (!timeCreated)
-      throw new MissingEventTimeError('Missing expected timestamp in handleOpenedLabeled()!');
-
-    const id = body?.['issue']?.['id'];
-    if (!id) throw new MissingIdError('Missing ID in handleOpenedLabeled()!');
-
-    const title = body?.['issue']?.['title'] || '';
-
-    // Check for incident label
-    const labels = body?.['issue']?.['labels'];
-    if (labels && labels.length > 0) {
-      const incidentLabels = labels.filter(
-        (label: Record<string, any>) => label.name === 'incident'
-      );
-      if (incidentLabels.length > 0)
-        return {
-          eventTime: Date.now().toString(),
-          timeCreated: convertDateToUnixTimestamp(timeCreated),
-          timeResolved: '',
-          id: id.toString(),
-          title,
-          message: JSON.stringify(body)
-        };
-    }
-
-    // If we don't have any incident labels it's time to eject
-    return {
-      eventTime: '',
-      timeCreated: '',
-      timeResolved: '',
-      id: '',
-      title: '',
-      message: ''
-    };
-  }*/
-
-  /**
    * @description Utility to resolve an incident.
    */
  /* private handleClosedUnlabeled(body: Record<string, any>) {
