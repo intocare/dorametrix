@@ -22,7 +22,7 @@ export class GitHubParser implements Parser {
     const { headers } = eventTypeInput;
     const eventType = headers?.['X-GitHub-Event'] || headers?.['x-github-event'];
 
-    if (eventType === 'push') return 'change';
+    if (eventType === 'pull_request') return 'change';
     if (eventType === 'issues') return 'incident';
 
     throw new UnknownEventTypeError();
@@ -43,8 +43,8 @@ export class GitHubParser implements Parser {
     if (!event) throw new MissingEventError();
 
     switch (event) {
-      case 'push':
-        return this.handlePush(body);
+      case 'pull_request':
+        return this.handlePullRequest(body);
       case 'opened':
       case 'labeled':
         return this.handleOpenedLabeled(body);
@@ -65,12 +65,23 @@ export class GitHubParser implements Parser {
   /**
    * @description Utility to create a change.
    */
-  private handlePush(body: Record<string, any>) {
-    const timeCreated = body?.['head_commit']?.['timestamp'];
+  private handlePullRequest(body: Record<string, any>) {
+    const timeCreated = body?.['pull_request']?.['merged_at'];
     if (!timeCreated)
       throw new MissingEventTimeError('Missing expected timestamp in handlePush()!');
-    const id = body?.['head_commit']?.['id'];
+    const id = body?.['pull_request']?.['merge_commit_sha'];
     if (!id) throw new MissingIdError('Missing ID in handlePush()!');
+
+    const merged = body?.['pull_request']?.['merged'];
+
+    if(!merged){
+      return {
+        eventTime: 'UNKNOWN',
+        timeCreated: 'UNKNOWN',
+        id: 'UNKNOWN',
+        message: 'UNKNOWN'
+      };
+    }
 
     return {
       eventTime: Date.now().toString(),
