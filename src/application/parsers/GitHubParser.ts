@@ -49,7 +49,7 @@ export class GitHubParser implements Parser {
         return {
           eventTime: 'UNKNOWN',
           timeCreated: 'UNKNOWN',
-          id: 'OPENED',
+          id: event.toString(),
           message: 'OPENED'
         };
     }
