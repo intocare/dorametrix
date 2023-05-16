@@ -57,12 +57,6 @@ export class GitHubParser implements Parser {
    * @description Utility to create a change.
    */
   private handlePullRequest(body: Record<string, any>) {
-    const timeCreated = body?.['pull_request']?.['merged_at'];
-    if (!timeCreated)
-      throw new MissingEventTimeError('Missing expected timestamp in handlePush()!');
-    const id = body?.['pull_request']?.['merge_commit_sha'];
-    if (!id) throw new MissingIdError('Missing ID in handlePush()!');
-
     const merged = body?.['action'];
 
     if(merged !== 'closed'){
@@ -73,6 +67,12 @@ export class GitHubParser implements Parser {
         message: 'UNKNOWN'
       };
     }
+    
+    const timeCreated = body?.['pull_request']?.['merged_at'];
+    if (!timeCreated)
+      throw new MissingEventTimeError('Missing expected timestamp in handlePush()!');
+    const id = body?.['pull_request']?.['merge_commit_sha'];
+    if (!id) throw new MissingIdError('Missing ID in handlePush()!');
 
     return {
       eventTime: Date.now().toString(),
