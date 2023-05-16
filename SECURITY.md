@@ -11,4 +11,4 @@ These versions of `dorametrix` are currently being supported with security updat
 
 ## Reporting a Vulnerability
 
-Only send vulnerability reports via a private conversation. Please prepare proof of the security vulnerability, and if possible, a mitigation strategy if one is identified.dsqf
+Only send vulnerability reports via a private conversation. Please prepare proof of the security vulnerability, and if possible, a mitigation strategy if one is identified.
