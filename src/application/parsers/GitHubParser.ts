@@ -72,7 +72,7 @@ export class GitHubParser implements Parser {
         eventTime: 'UNKNOWN',
         timeCreated: 'UNKNOWN',
         id: 'OPENED',
-        message: 'UNKNOWN'
+        message: 'OPENED'
       };
     }
 
