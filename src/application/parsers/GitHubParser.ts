@@ -65,13 +65,13 @@ export class GitHubParser implements Parser {
     const id = body?.['pull_request']?.['merge_commit_sha'];
     if (!id) throw new MissingIdError('Missing ID in handlePush()!');
 
-    const merged = body?.['pull_request']?.['merged'];
+    const merged = body?.['action'];
 
-    if(!merged){
+    if(merged !== 'closed'){
       return {
         eventTime: 'UNKNOWN',
         timeCreated: 'UNKNOWN',
-        id: 'UNKNOWN',
+        id: 'OPENED',
         message: 'UNKNOWN'
       };
     }
