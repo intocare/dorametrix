@@ -57,9 +57,7 @@ export class GitHubParser implements Parser {
    * @description Utility to create a change
    */
   private handlePullRequest(body: Record<string, any>) {
-    const merged = body?.['action'];
-
-    if(merged !== 'closed'){
+    if(!body?.['pull_request']?.['merged']){
       return {
         eventTime: 'UNKNOWN',
         timeCreated: 'UNKNOWN',
