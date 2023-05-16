@@ -48,7 +48,7 @@ export class GitHubParser implements Parser {
           eventTime: 'UNKNOWN',
           timeCreated: 'UNKNOWN',
           id: 'UNKNOWN',
-          message: 'OPENED'
+          message: 'UNKNOWN'
         };
     }
   }
@@ -69,8 +69,8 @@ export class GitHubParser implements Parser {
       return {
         eventTime: 'UNKNOWN',
         timeCreated: 'UNKNOWN',
-        id: 'OPENED',
-        message: 'OPENED'
+        id: 'UNKNOWN',
+        message: 'UNKNOWN'
       };
     }
 
@@ -81,35 +81,6 @@ export class GitHubParser implements Parser {
       message: JSON.stringify(body)
     };
   }
-
-  /**
-   * @description Utility to resolve an incident.
-   */
- /* private handleClosedUnlabeled(body: Record<string, any>) {
-    const timeCreated = body?.['issue']?.['created_at'];
-    if (!timeCreated)
-      throw new MissingEventTimeError('Missing expected timestamp in handleClosedUnlabeled()!');
-
-    const timeResolved = body?.['issue']?.['closed_at'] || body?.['issue']?.['updated_at']; // Use "updated_at" for unlabeled
-    if (!timeResolved)
-      throw new MissingEventTimeError(
-        'Missing expected updated/resolved in handleClosedUnlabeled()!'
-      );
-
-    const id = body?.['issue']?.['id'];
-    if (!id) throw new MissingIdError('Missing ID in handleClosedUnlabeled()!');
-
-    const title = body?.['issue']?.['title'] || '';
-
-    return {
-      eventTime: Date.now().toString(),
-      timeCreated: convertDateToUnixTimestamp(timeCreated),
-      timeResolved: timeResolved ? convertDateToUnixTimestamp(timeResolved) : Date.now().toString(),
-      id: id.toString(),
-      title,
-      message: JSON.stringify(body)
-    };
-  }*/
 
   /**
    * @description Get the repository name.
