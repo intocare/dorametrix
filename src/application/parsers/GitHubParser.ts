@@ -45,13 +45,6 @@ export class GitHubParser implements Parser {
     switch (event) {
       case 'pull_request':
         return this.handlePullRequest(body);
-      case 'opened':
-      case 'labeled':
-        return this.handleOpenedLabeled(body);
-      case 'closed':
-      case 'unlabeled':
-      case 'deleted':
-        return this.handleClosedUnlabeled(body);
       default:
         return {
           eventTime: 'UNKNOWN',
@@ -94,7 +87,7 @@ export class GitHubParser implements Parser {
   /**
    * @description Utility to create an incident.
    */
-  private handleOpenedLabeled(body: Record<string, any>) {
+  /*private handleOpenedLabeled(body: Record<string, any>) {
     const timeCreated = body?.['issue']?.['created_at'];
     if (!timeCreated)
       throw new MissingEventTimeError('Missing expected timestamp in handleOpenedLabeled()!');
@@ -130,12 +123,12 @@ export class GitHubParser implements Parser {
       title: '',
       message: ''
     };
-  }
+  }*/
 
   /**
    * @description Utility to resolve an incident.
    */
-  private handleClosedUnlabeled(body: Record<string, any>) {
+ /* private handleClosedUnlabeled(body: Record<string, any>) {
     const timeCreated = body?.['issue']?.['created_at'];
     if (!timeCreated)
       throw new MissingEventTimeError('Missing expected timestamp in handleClosedUnlabeled()!');
@@ -159,7 +152,7 @@ export class GitHubParser implements Parser {
       title,
       message: JSON.stringify(body)
     };
-  }
+  }*/
 
   /**
    * @description Get the repository name.
