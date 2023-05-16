@@ -36,12 +36,15 @@ export class GitHubParser implements Parser {
     const body = payloadInput.body || {};
 
     const event = (() => {
+      if(body?.action === 'closed') return body.action;
       return headers?.['X-GitHub-Event'] || headers?.['x-github-event'];
     })();
     if (!event) throw new MissingEventError();
 
     switch (event) {
       case 'pull_request':
+        return this.handlePullRequest(body);
+      case 'closed':
         return this.handlePullRequest(body);
       default:
         return {
