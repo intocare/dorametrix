@@ -36,8 +36,6 @@ export class GitHubParser implements Parser {
     const body = payloadInput.body || {};
 
     const event = (() => {
-      // `body.action` will contain any specifics, so if it exists that's the one we want to use
-      if (body?.action) return body.action;
       return headers?.['X-GitHub-Event'] || headers?.['x-github-event'];
     })();
     if (!event) throw new MissingEventError();
@@ -49,7 +47,7 @@ export class GitHubParser implements Parser {
         return {
           eventTime: 'UNKNOWN',
           timeCreated: 'UNKNOWN',
-          id: event.toString(),
+          id: 'UNKNOWN',
           message: 'OPENED'
         };
     }
