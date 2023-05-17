@@ -30,11 +30,17 @@ export class AzureParser implements Parser {
       const eventType = body?.['eventType'];
       if (eventType === 'workitem.created') return 'opened';
       if (eventType === 'workitem.updated') {
-        if (body?.['resource']?.['fields']?.['System.Reason']?.['newValue'] === 'Completed') return 'closed';
-        if (body?.['resource']?.['fields']?.['System.Tags']?.['newValue'] === 'incident') return 'labeled';
         if (
-          body?.['resource']?.['fields']?.['System.Tags']?.['newValue'] !== 'incident' && 
-          body?.['resource']?.['fields']?.['System.Tags']?.['oldValue'] === 'incident'
+          body?.['resource']?.['revision']?.['fields']?.['System.Reason'] === 'Completed' &&
+          body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.includes('incident')
+        ) return 'closed';
+        if (
+          body?.['resource']?.['fields']?.['System.Tags']?.['newValue']?.includes('incident') && 
+          !body?.['resource']?.['fields']?.['System.Tags']?.['oldValue']?.includes('incident')
+          ) return 'labeled';
+        if (
+          !body?.['resource']?.['fields']?.['System.Tags']?.['newValue']?.includes('incident') && 
+          body?.['resource']?.['fields']?.['System.Tags']?.['oldValue']?.includes('incident')
           ) return 'unlabeled';
       }
       if (eventType === 'workitem.deleted') return 'deleted';
@@ -49,8 +55,9 @@ export class AzureParser implements Parser {
         return this.handleOpenedLabeled(body);
       case 'closed':
       case 'unlabeled':
-      case 'deleted':
         return this.handleClosedUnlabeled(body);
+      case 'deleted':
+        return this.handleDeleted(body);
       default:
         return {
           eventTime: 'UNKNOWN',
@@ -102,6 +109,32 @@ export class AzureParser implements Parser {
     if (!id) throw new MissingIdError('Missing ID in handleClosedUnlabeled()!');
 
     const title = body?.['resource']?.['revision']?.['fields']?.['System.Title'] || '';
+
+    return {
+      eventTime: Date.now().toString(),
+      timeCreated: convertDateToUnixTimestamp(timeCreated),
+      timeResolved: convertDateToUnixTimestamp(timeResolved),
+      id: id.toString(),
+      title,
+      message: JSON.stringify(body)
+    };
+  }
+
+  private handleDeleted(body: Record<string, any>) {
+    const timeCreated = body?.['resource']?.['fields']?.['System.CreatedDate'];
+    if (!timeCreated)
+      throw new MissingEventTimeError('Missing expected timestamp in handleClosedUnlabeled()!');
+
+    const timeResolved = body?.['createdDate'];
+    if (!timeResolved)
+      throw new MissingEventTimeError(
+        'Missing expected updated/resolved timestamp in handleClosedUnlabeled()!'
+      );
+
+      const id = body?.['resource']?.['id'];
+    if (!id) throw new MissingIdError('Missing ID in handleClosedUnlabeled()!');
+
+    const title = body?.['resource']?.['fields']?.['System.Title'] || '';
 
     return {
       eventTime: Date.now().toString(),
