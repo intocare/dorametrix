@@ -5,6 +5,7 @@ import { JiraParser } from './parsers/JiraParser';
 import { ShortcutParser } from './parsers/ShortcutParser';
 
 import { Parser } from '../interfaces/Parser';
+import { AzureParser } from './parsers/AzureParser';
 
 /**
  * @description Infer the correct parser to use, based on metadata from headers.
@@ -16,6 +17,7 @@ export function getParser(headers: Record<string, any>): Parser {
     if (ua.includes('GitHub')) return new GitHubParser();
     if (ua.includes('Bitbucket')) return new BitbucketParser();
     if (ua.includes('Atlassian')) return new JiraParser();
+    if (ua.includes('VSServices')) return new AzureParser();
     if (ua.includes('Apache-HttpClient') && 'Shortcut-Signature' in headers)
       return new ShortcutParser();
   }
