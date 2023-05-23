@@ -15,7 +15,7 @@ import {
 export class GitHubParser implements Parser {
   /**
    * @description Normalize the incoming event into one of the three
-   * supported types: `change`, `deployment`, or `incident`
+   * supported types: `change`, `deployment`, or `incident`.
    */
   // @ts-ignore
   public async getEventType(eventTypeInput: EventTypeInput): Promise<string> {
@@ -57,7 +57,7 @@ export class GitHubParser implements Parser {
   }
 
   /**
-   * @description Utility to create a change
+   * @description Utility to create a change.
    */
   private handlePullRequest(body: Record<string, any>) {
     if(!body?.['pull_request']?.['merged']){
