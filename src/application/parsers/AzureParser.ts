@@ -51,8 +51,9 @@ export class AzureParser implements Parser {
 
     switch (event) {
       case 'opened':
+        return this.handleOpened(body);
       case 'labeled':
-        return this.handleOpenedLabeled(body);
+        return this.handleLabeled(body);
       case 'closed':
       case 'unlabeled':
         return this.handleClosedUnlabeled(body);
@@ -68,11 +69,33 @@ export class AzureParser implements Parser {
     }
   }
 
+  private handleLabeled(body: Record<string, any>) {
+    let  timeCreated = body?.['resource']?.['revision']?.['fields']?.['System.CreatedDate'];
+
+    if (!timeCreated)
+      throw new MissingEventTimeError('Missing expected timestamp in handleOpenedLabeled()!');
+
+    const id = body?.['resource']?.['workItemId'];
+    if (!id) throw new MissingIdError('Missing ID in handleOpenedLabeled()!');
+
+    const title = body?.['resource']?.['revision']?.['fields']?.['System.Title'] || '';
+
+    return {
+      eventTime: Date.now().toString(),
+      timeCreated: convertDateToUnixTimestamp(timeCreated),
+      timeResolved: '',
+      id: id.toString(),
+      title,
+      message: JSON.stringify(body)
+    };
+  }
+
   /**
    * @description Utility to create an incident.
    */
-  private handleOpenedLabeled(body: Record<string, any>) {
-    const timeCreated = body?.['resource']?.['fields']?.['System.CreatedDate'];
+  private handleOpened(body: Record<string, any>) {
+    let  timeCreated = body?.['resource']?.['fields']?.['System.CreatedDate'];
+
     if (!timeCreated)
       throw new MissingEventTimeError('Missing expected timestamp in handleOpenedLabeled()!');
 
