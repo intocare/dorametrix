@@ -102,30 +102,34 @@ class DorametrixConcrete implements Dorametrix {
    */
   private calculateLeadTime(deployment: Deployment, allChanges: Change[]): number {
     const { changes, timeCreated } = deployment;
-
+    console.log(allChanges);
     /**
      * Each change might lead to one or more deployments, so go and get each one.
      */
-    const changeIds = changes.map((change: DeploymentChange) => change.id);
-    const matches = allChanges
-      .filter((change: DeploymentChange) => changeIds.includes(change.id))
-      .map((change: DeploymentChange) => change.timeCreated)
-      .sort((a: any, b: any) => a.timeCreated - b.timeCreated);
 
+      let firstMatch = 0;
+      console.log(changes);
+      changes.forEach((change: DeploymentChange) => {
+        const changeTime =  new Date(change.timeCreated).getTime();
+        if(changeTime < firstMatch || firstMatch == 0) {
+          firstMatch = changeTime;
+        }
+      });
     /**
      * Calculate diff between earliest commit timestamp (`firstMatch`) and deployment timestamp (`timeCreated`).
      */
-    if (matches?.length > 0) {
-      const firstMatch = matches[0];
+    if (firstMatch !== 0) {
+      console.log('first', firstMatch);
 
-      if (firstMatch && timeCreated && firstMatch > timeCreated) {
+      if (firstMatch && timeCreated && firstMatch.toString() > timeCreated) {
         console.warn(
           `Unexpected deployment data: firstMatch field is later than timeCreated...Skipping it.\n--> timeCreated: ${firstMatch} firstMatch: ${firstMatch}`
         );
         return 0;
       }
-
-      return getDiffInSeconds(firstMatch, timeCreated);
+      console.log('firstMatch', firstMatch);
+      console.log('timeCreated', timeCreated);
+      return getDiffInSeconds(firstMatch.toString(), timeCreated);
     }
 
     return 0;

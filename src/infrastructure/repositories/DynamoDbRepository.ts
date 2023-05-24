@@ -227,7 +227,6 @@ class DynamoRepository implements Repository {
     const { key, from, getLastDeployedCommit, to } = dataRequest;
     let command;
     if(getLastDeployedCommit){
-      console.log('deployed commit');
       command = {
         TableName: this.tableName,
         KeyConditionExpression: 'pk = :pk AND sk = :sk',
@@ -239,7 +238,6 @@ class DynamoRepository implements Repository {
         }
       };
     }else{
-      console.log('between');
       command = {
         TableName: 'dorametrix-dev',
         KeyConditionExpression: 'pk = :pk AND sk BETWEEN :start_sk AND :end_sk',
