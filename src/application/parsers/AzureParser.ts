@@ -31,7 +31,7 @@ export class AzureParser implements Parser {
       if (eventType === 'workitem.created') return 'opened';
       if (eventType === 'workitem.updated') {
         if (
-          body?.['resource']?.['revision']?.['fields']?.['System.Reason'] === 'Completed' &&
+          body?.['resource']?.['revision']?.['fields']?.['System.State'] === 'Closed' &&
           body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.includes('incident')
         ) return 'closed';
         if (
@@ -122,7 +122,7 @@ export class AzureParser implements Parser {
     if (!timeCreated)
       throw new MissingEventTimeError('Missing expected timestamp in handleClosedUnlabeled()!');
 
-    const timeResolved = body?.['createdDate'];
+    const timeResolved = body?.['resource']?.['revision']?.['fields']?.['Microsoft.VSTS.Common.ClosedDate'];
     if (!timeResolved)
       throw new MissingEventTimeError(
         'Missing expected updated/resolved timestamp in handleClosedUnlabeled()!'
