@@ -177,22 +177,22 @@ export class AzureParser implements Parser {
    */
   public getRepoName(body: Record<string, any>): string {
     if(body?.['resource']?.['revision']?.['fields'] !== undefined){
-      const areaPath = body?.['resource']?.['revision']?.['fields']?.['System.AreaPath'];
+      const areaPath = body?.['resource']?.['revision']?.['fields']?.['System.TeamProject'];
 
-      if(body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.includes('intocare')){
+      if(body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.toLowerCase()?.includes('intocare')){
         return areaPath.concat('/intocare');
       }
-      if(body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.includes('portal')){
+      if(body?.['resource']?.['revision']?.['fields']?.['System.Tags']?.toLowerCase()?.includes('portal')){
         return areaPath.concat('/portal');
       }
       return areaPath;
   }else{
-    const areaPath = body?.['resource']?.['fields']?.['System.AreaPath'];
+    const areaPath = body?.['resource']?.['fields']?.['System.TeamProject'];
 
-    if(body?.['resource']?.['fields']?.['System.Tags']?.includes('intocare')){
+    if(body?.['resource']?.['fields']?.['System.Tags']?.toLowerCase()?.includes('intocare')){
       return areaPath.concat('/intocare');
     }
-    if(body?.['resource']?.['fields']?.['System.Tags']?.includes('portal')){
+    if(body?.['resource']?.['fields']?.['System.Tags']?.toLowerCase()?.includes('portal')){
       return areaPath.concat('/portal');
     }
     return areaPath;
