@@ -26,7 +26,6 @@ class ChangeConcrete {
 
   constructor(changeEvent: Event) {
     const { repo, eventType, id } = changeEvent;
-
     if (!repo)
       throw new MissingRepoNameError('Missing "repo" when trying to create a Change value object!');
     if (!eventType)
@@ -39,7 +38,7 @@ class ChangeConcrete {
     this.repo = repo;
     this.eventType = eventType;
     this.id = id;
-    this.timeCreated = Date.now().toString();
+    this.timeCreated = changeEvent?.timeCreated || Date.now().toString();
     this.date = getCurrentDate(true);
   }
 

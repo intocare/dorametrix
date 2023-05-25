@@ -148,6 +148,7 @@ class DynamoRepository implements Repository {
    * @description Add (create/update) a Change in the repository.
    */
   public async addChange(change: Change): Promise<void> {
+    console.log('change', change);
     const { repo, id, timeCreated } = change;
 
     const command = {
@@ -160,7 +161,7 @@ class DynamoRepository implements Repository {
         id: { S: id }
       }
     };
-
+    console.log('command', command);
     /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') await this.dynamoDb.send(new PutItemCommand(command));
   }

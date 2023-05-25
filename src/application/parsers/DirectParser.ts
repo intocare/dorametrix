@@ -30,12 +30,12 @@ export class DirectParser implements Parser {
 
     return {
       eventTime: date,
-      timeCreated: date,
+      timeCreated: body?.timeCreated || date,
       /**
        * Create a 40-character string similar to SHA1 to
        * replicate the appearance of a Git commit ID.
        */
-      id: randomBytes(20).toString('hex'),
+      id: body?.id || randomBytes(20).toString('hex'),
       message: body ? JSON.stringify(body) : ''
     };
   }

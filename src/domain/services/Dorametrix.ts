@@ -100,17 +100,15 @@ class DorametrixConcrete implements Dorametrix {
   /**
    * @description Calculate the lead time of a change for an individual deployment.
    */
-  private calculateLeadTime(deployment: Deployment, allChanges: Change[]): number {
+  private calculateLeadTime(deployment: Deployment, _allChanges: Change[]): number {
     const { changes, timeCreated } = deployment;
-    console.log(allChanges);
     /**
      * Each change might lead to one or more deployments, so go and get each one.
      */
 
       let firstMatch = 0;
-      console.log(changes);
       changes.forEach((change: DeploymentChange) => {
-        const changeTime =  new Date(change.timeCreated).getTime();
+        const changeTime =  new Date(change.timeCreated).getTime() || Number(change.timeCreated);
         if(changeTime < firstMatch || firstMatch == 0) {
           firstMatch = changeTime;
         }
@@ -119,17 +117,17 @@ class DorametrixConcrete implements Dorametrix {
      * Calculate diff between earliest commit timestamp (`firstMatch`) and deployment timestamp (`timeCreated`).
      */
     if (firstMatch !== 0) {
-      console.log('first', firstMatch);
-
-      if (firstMatch && timeCreated && firstMatch.toString() > timeCreated) {
+      if (firstMatch && timeCreated && firstMatch.toString() >= timeCreated) {
         console.warn(
-          `Unexpected deployment data: firstMatch field is later than timeCreated...Skipping it.\n--> timeCreated: ${firstMatch} firstMatch: ${firstMatch}`
+          `Unexpected deployment data: firstMatch field is later than timeCreated...Skipping it.\n--> timeCreated: ${timeCreated} firstMatch: ${firstMatch}`
         );
         return 0;
       }
-      console.log('firstMatch', firstMatch);
-      console.log('timeCreated', timeCreated);
-      return getDiffInSeconds(firstMatch.toString(), timeCreated);
+      if(firstMatch.toString().length === 10 || timeCreated.toString().length === 10) {
+        return getDiffInSeconds((firstMatch * 1000).toString(), timeCreated.concat('000'));
+      }else{
+        return getDiffInSeconds(firstMatch.toString(), timeCreated);
+      }
     }
 
     return 0;
